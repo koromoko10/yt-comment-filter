@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>削除されたコメント数</title>
+  <style>
+    /*ダークモード対応系*/
+    :root {
+    color-scheme: light dark;
+    }
+
+
+    /* フォント設定 */
+    @font-face {
+        font-family: "LINE_Rg";
+        font-weight: 400;
+        src: url(https://koromoko10.github.io/fonts/LINESeed_JP/LINESeedJP_OTF_Rg.woff) format("woff");
+    }
+
+    body { 
+        font-family: "LINE_Rg",Arial, sans-serif;
+        margin: 20px;
+
+        /*ダークモード対応系*/
+	    background-color: light-dark(#ffffff,#1f1f1f);
+	    color: light-dark(#000000,#bbbbbb);
+    }
+
+    /*文字選択色*/
+    body ::selection {
+	    background-color : rgba(153, 153, 153, 0.60);      /* 選択時の背景色 */
+    }
+
+    #deleteCount {
+        font-size: 24px;
+        font-weight: bold;
+    }
+    body {
+        max-width: 200px;
+        min-width: 145px;
+    }
+
+  </style>
+</head>
+<body>
+    <center>
+    <h3>削除されたコメント数</h3>
+        <div id="deleteCount">0</div>
+    </center>
+
+    <script src="popup.js"></script>
+</body>
+</html>

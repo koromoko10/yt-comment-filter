@@ -1,0 +1,42 @@
+{
+    "manifest_version": 3,
+    "name": "YouTube コメントフィルター",
+    "version": "1.0.2",
+    "description": "特定のパターンに合うYouTubeコメントを非表示にします",
+    "permissions": ["scripting", "storage"],
+    "host_permissions": [
+      "https://www.youtube.com/*"
+    ],
+    "background": {
+    "service_worker": "background.js"
+    },
+    "content_scripts": [
+      {
+        "matches": ["https://www.youtube.com/*"],
+        "js": ["content.js"]
+      }
+    ],
+    "action": {
+    "default_popup": "popup.html",
+    "default_title": "クリックするとコメントの非表示数を確認できます",
+    "default_icon": "icon.png"
+    },
+    "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+    "author": "koromoko10",
+    "homepage_url": "https://lit.link/koromoko10/",
+    "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "windows": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y",
+        "chromeos": "Ctrl+Shift+Y",
+        "linux": "Ctrl+Shift+Y"
+      }
+    }
+    },
+    "version_name": "Beta 1.0.2"
+}
