@@ -1,0 +1,2 @@
+# yt-comment-filter
+特定のパターンに合うYouTubeコメントを非表示にするChrome拡張機能です
