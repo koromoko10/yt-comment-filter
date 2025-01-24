@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "YouTube コメントフィルター",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "特定のパターンに合うYouTubeコメントを非表示にします",
     "permissions": ["scripting", "storage"],
     "host_permissions": [
@@ -16,6 +16,12 @@
         "js": ["content.js"]
       }
     ],
+    "web_accessible_resources": [
+    {
+      "resources": ["fonts/LINESeedJP_OTF_Rg.woff"],
+      "matches": ["<all_urls>"]
+    }
+  ],
     "action": {
     "default_popup": "popup.html",
     "default_title": "クリックするとコメントの非表示数を確認できます",
@@ -38,5 +44,5 @@
       }
     }
     },
-    "version_name": "Beta 1.0.2"
+    "version_name": "Beta 1.0.3(フォント修正版)"
 }
