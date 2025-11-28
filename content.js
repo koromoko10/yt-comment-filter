@@ -131,36 +131,79 @@ const handleFilters = [
   "@mariruitomariburawakami"
 ];
 
-// コメント非表示関数
-function hideComments(userFilters, regexFilters) {(userFilters, regexFilters) {
-  const comments = document.querySelectorAll("ytd-comment-thread-renderer");
+let currentUserFilters = [];
+let currentRegexFilters = [];
+
+function normalizeHandle(s) {
+  return (s || "").trim().toLowerCase();
+}
+
+function shouldHideComment(comment) {
+  if (!comment) return false;
+  const contentEl = comment.querySelector('#content-text');
+  const authorEl = comment.querySelector('#author-text');
+  const text = contentEl && contentEl.textContent ? contentEl.textContent : '';
+  const handle = authorEl && authorEl.textContent ? authorEl.textContent : '';
+  const lcText = text.toLowerCase();
+  const lcHandle = normalizeHandle(handle);
+  if (commentFilters.some(re => re.test(lcText))) return true;
+  if (handleFilters.some(h => lcHandle.includes(h.toLowerCase()))) return true;
+  if (currentUserFilters.some(u => lcHandle.includes(u.toLowerCase()))) return true;
+  for (const pattern of currentRegexFilters) {
+    try {
+      const re = new RegExp(pattern, 'i');
+      if (re.test(lcHandle) || re.test(lcText)) return true;
+    } catch (e) {
+      continue;
+    }
+  }
+  return false;
+}
+
+function processComments(root) {
+  const comments = (root || document).querySelectorAll('ytd-comment-thread-renderer');
   comments.forEach(comment => {
-    const text = comment.querySelector("#content-text").textContent.toLowerCase();
-    const handle = comment.querySelector("#author-text").textContent.trim().toLowerCase();
-
-    const shouldHide =
-      commentFilters.some(filter => filter.test(text)) ||
-      userFilters.some(user => handle.includes(user.toLowerCase())) ||
-      regexFilters.some(pattern => {
-        try { return new RegExp(pattern, 'i').test(handle); } catch (e) { return false; }
-      });
-
-    if (shouldHide) {
-      comment.style.display = "none";
-      chrome.runtime.sendMessage({ action: "incrementCount" });
+    if (comment.dataset.ycfHidden === '1') return;
+    try {
+      if (shouldHideComment(comment)) {
+        comment.style.display = 'none';
+        comment.dataset.ycfHidden = '1';
+        chrome.runtime.sendMessage({ action: 'incrementCount' });
+      }
+    } catch (e) {
     }
   });
 }
 
-function init() {
-  function run() {
-    chrome.storage.local.get({ userFilters: [], regexFilters: [] }, (data) => {
-      hideComments(data.userFilters, data.regexFilters);
-    });
-  }
-  new MutationObserver(run).observe(document, { childList: true, subtree: true });
-  run();
+function loadFiltersAndRun() {
+  chrome.storage.local.get({ userFilters: [], regexFilters: [] }, (data) => {
+    currentUserFilters = Array.isArray(data.userFilters) ? data.userFilters : [];
+    currentRegexFilters = Array.isArray(data.regexFilters) ? data.regexFilters : [];
+    processComments(document);
+  });
 }
 
-chrome.runtime.sendMessage({ action: "resetCount" });
-init();
+const observer = new MutationObserver(mutations => {
+  for (const m of mutations) {
+    if (m.addedNodes && m.addedNodes.length) {
+      m.addedNodes.forEach(node => {
+        if (node.nodeType !== 1) return;
+        if (node.matches && node.matches('ytd-comment-thread-renderer')) {
+          processComments(node);
+        } else {
+          processComments(node);
+        }
+      });
+    }
+  }
+});
+
+chrome.runtime.sendMessage({ action: 'resetCount' });
+loadFiltersAndRun();
+observer.observe(document, { childList: true, subtree: true });
+
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && (changes.userFilters || changes.regexFilters)) {
+    loadFiltersAndRun();
+  }
+});
