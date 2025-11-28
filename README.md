@@ -1,6 +1,7 @@
 # YouTube コメントフィルター
 
-<img src="https://github.com/user-attachments/assets/354d23a0-7315-4a7a-98a3-77289188c5f8" title="Logo" width="30%">
+<img src="https://github.com/user-attachments/assets/286405a0-423c-483f-a223-375e31b732c0" title="Logo" width="15%">
+
 
 ## この拡張機能について
 特定のパターンに合うYouTubeコメントを非表示にするChrome拡張機能です。<br>
