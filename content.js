@@ -132,28 +132,35 @@ const handleFilters = [
 ];
 
 // コメント非表示関数
-function hideComments() {
+function hideComments(userFilters, regexFilters) {(userFilters, regexFilters) {
   const comments = document.querySelectorAll("ytd-comment-thread-renderer");
   comments.forEach(comment => {
     const text = comment.querySelector("#content-text").textContent.toLowerCase();
     const handle = comment.querySelector("#author-text").textContent.trim().toLowerCase();
 
-    // コメント内容またはハンドル名がフィルタに一致するかチェック
-    const shouldHide = commentFilters.some(filter => filter.test(text)) ||
-                       handleFilters.includes(handle);
+    const shouldHide =
+      commentFilters.some(filter => filter.test(text)) ||
+      userFilters.some(user => handle.includes(user.toLowerCase())) ||
+      regexFilters.some(pattern => {
+        try { return new RegExp(pattern, 'i').test(handle); } catch (e) { return false; }
+      });
 
     if (shouldHide) {
       comment.style.display = "none";
-      // 削除カウントをインクリメント
       chrome.runtime.sendMessage({ action: "incrementCount" });
     }
   });
 }
 
-// ページがリロードされた際にカウントをリセット
+function init() {
+  function run() {
+    chrome.storage.local.get({ userFilters: [], regexFilters: [] }, (data) => {
+      hideComments(data.userFilters, data.regexFilters);
+    });
+  }
+  new MutationObserver(run).observe(document, { childList: true, subtree: true });
+  run();
+}
+
 chrome.runtime.sendMessage({ action: "resetCount" });
-
-// ページロードやスクロールでのコメント表示時に関数を再実行
-new MutationObserver(hideComments).observe(document, { childList: true, subtree: true });
-
-//テスト用動画 https://www.youtube.com/watch?v=LE-JN7_rxtE
+init();
