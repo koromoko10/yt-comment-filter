@@ -25,13 +25,12 @@
     "action": {
     "default_popup": "popup.html",
     "default_title": "クリックするとコメントの非表示数を確認できます",
-    "default_icon": "icon/icon.png"
+    "default_icon": "icons/icon.png"
     },
-    "options_page": "options.html",
     "icons": {
-    "16": "icon/icon16.png",
-    "48": "icon/icon48.png",
-    "128": "icon/icon128.png"
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   },
     "author": "koromoko10",
     "homepage_url": "https://lit.link/koromoko10/",
@@ -45,5 +44,5 @@
       }
     }
     },
-    "version_name": "Beta 1.1.0 <カスタムユーザーフィルター機能追加！>"
+    "version_name": "Beta 1.1.0<ユーザーフィルター機能追加！>"
 }
