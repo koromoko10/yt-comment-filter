@@ -131,6 +131,7 @@ const handleFilters = [
   "@mariruitomariburawakami"
 ];
 
+<<<<<<< HEAD
 let currentUserFilters = [];
 let currentRegexFilters = [];
 
@@ -171,10 +172,28 @@ function processComments(root) {
         chrome.runtime.sendMessage({ action: 'incrementCount' });
       }
     } catch (e) {
+=======
+// コメント非表示関数
+function hideComments() {
+  const comments = document.querySelectorAll("ytd-comment-thread-renderer");
+  comments.forEach(comment => {
+    const text = comment.querySelector("#content-text").textContent.toLowerCase();
+    const handle = comment.querySelector("#author-text").textContent.trim().toLowerCase();
+
+    // コメント内容またはハンドル名がフィルタに一致するかチェック
+    const shouldHide = commentFilters.some(filter => filter.test(text)) ||
+                       handleFilters.includes(handle);
+
+    if (shouldHide) {
+      comment.style.display = "none";
+      // 削除カウントをインクリメント
+      chrome.runtime.sendMessage({ action: "incrementCount" });
+>>>>>>> parent of e2b5a75 (カスタムユーザーフィルターのテスト)
     }
   });
 }
 
+<<<<<<< HEAD
 function loadFiltersAndRun() {
   chrome.storage.local.get({ userFilters: [], regexFilters: [] }, (data) => {
     currentUserFilters = Array.isArray(data.userFilters) ? data.userFilters : [];
@@ -207,3 +226,12 @@ chrome.storage.onChanged.addListener((changes, area) => {
     loadFiltersAndRun();
   }
 });
+=======
+// ページがリロードされた際にカウントをリセット
+chrome.runtime.sendMessage({ action: "resetCount" });
+
+// ページロードやスクロールでのコメント表示時に関数を再実行
+new MutationObserver(hideComments).observe(document, { childList: true, subtree: true });
+
+//テスト用動画 https://www.youtube.com/watch?v=LE-JN7_rxtE
+>>>>>>> parent of e2b5a75 (カスタムユーザーフィルターのテスト)
