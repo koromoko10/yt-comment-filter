@@ -131,48 +131,6 @@ const handleFilters = [
   "@mariruitomariburawakami"
 ];
 
-<<<<<<< HEAD
-let currentUserFilters = [];
-let currentRegexFilters = [];
-
-function normalizeHandle(s) {
-  return (s || "").trim().toLowerCase();
-}
-
-function shouldHideComment(comment) {
-  if (!comment) return false;
-  const contentEl = comment.querySelector('#content-text');
-  const authorEl = comment.querySelector('#author-text');
-  const text = contentEl && contentEl.textContent ? contentEl.textContent : '';
-  const handle = authorEl && authorEl.textContent ? authorEl.textContent : '';
-  const lcText = text.toLowerCase();
-  const lcHandle = normalizeHandle(handle);
-  if (commentFilters.some(re => re.test(lcText))) return true;
-  if (handleFilters.some(h => lcHandle.includes(h.toLowerCase()))) return true;
-  if (currentUserFilters.some(u => lcHandle.includes(u.toLowerCase()))) return true;
-  for (const pattern of currentRegexFilters) {
-    try {
-      const re = new RegExp(pattern, 'i');
-      if (re.test(lcHandle) || re.test(lcText)) return true;
-    } catch (e) {
-      continue;
-    }
-  }
-  return false;
-}
-
-function processComments(root) {
-  const comments = (root || document).querySelectorAll('ytd-comment-thread-renderer');
-  comments.forEach(comment => {
-    if (comment.dataset.ycfHidden === '1') return;
-    try {
-      if (shouldHideComment(comment)) {
-        comment.style.display = 'none';
-        comment.dataset.ycfHidden = '1';
-        chrome.runtime.sendMessage({ action: 'incrementCount' });
-      }
-    } catch (e) {
-=======
 // コメント非表示関数
 function hideComments() {
   const comments = document.querySelectorAll("ytd-comment-thread-renderer");
@@ -188,45 +146,10 @@ function hideComments() {
       comment.style.display = "none";
       // 削除カウントをインクリメント
       chrome.runtime.sendMessage({ action: "incrementCount" });
->>>>>>> parent of e2b5a75 (カスタムユーザーフィルターのテスト)
     }
   });
 }
 
-<<<<<<< HEAD
-function loadFiltersAndRun() {
-  chrome.storage.local.get({ userFilters: [], regexFilters: [] }, (data) => {
-    currentUserFilters = Array.isArray(data.userFilters) ? data.userFilters : [];
-    currentRegexFilters = Array.isArray(data.regexFilters) ? data.regexFilters : [];
-    processComments(document);
-  });
-}
-
-const observer = new MutationObserver(mutations => {
-  for (const m of mutations) {
-    if (m.addedNodes && m.addedNodes.length) {
-      m.addedNodes.forEach(node => {
-        if (node.nodeType !== 1) return;
-        if (node.matches && node.matches('ytd-comment-thread-renderer')) {
-          processComments(node);
-        } else {
-          processComments(node);
-        }
-      });
-    }
-  }
-});
-
-chrome.runtime.sendMessage({ action: 'resetCount' });
-loadFiltersAndRun();
-observer.observe(document, { childList: true, subtree: true });
-
-chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === 'local' && (changes.userFilters || changes.regexFilters)) {
-    loadFiltersAndRun();
-  }
-});
-=======
 // ページがリロードされた際にカウントをリセット
 chrome.runtime.sendMessage({ action: "resetCount" });
 
@@ -234,4 +157,3 @@ chrome.runtime.sendMessage({ action: "resetCount" });
 new MutationObserver(hideComments).observe(document, { childList: true, subtree: true });
 
 //テスト用動画 https://www.youtube.com/watch?v=LE-JN7_rxtE
->>>>>>> parent of e2b5a75 (カスタムユーザーフィルターのテスト)
