@@ -90,57 +90,56 @@ const commentFilters = [
   /思ってもないこと/i
 ];
 
-// フィルター対象のハンドル名（@username）
-//参考 https://w.atwiki.jp/trollinformation/pages/129.html 
-const handleFilters = [
-  "@純白の天使イケメン天才りぐ",
-  "@ラフレシアisgod2",
-  "@純白の天使ラフレシア",
-  "@ラフレシアisGOD配信突撃垢",
-  "@japaa.n",
-  "@荒らしは正義",
-  "@OYASIROKAMI",
-  "@OYASIROSUKI",
-  "@user-pv7tm9nr4s",
-  "@にどね-i4s",
-  "@ねるねるA",
-  "@ねるねるサブE",
-  "@ねるねるサブ1",
-  "@ねるねるサブ-k7i",
-  "@ねるねるC",
-  "@ねるねるさぶ-u5b",
-  "@ねるねるサブ4",
-  "@クロゴキブリ-h6v",
-  "@rezeru_rezenama_god",
-  "@NGE.45",
-  "@人生過激派代表サザン",
-  "@人生過激派サザン2",
-  "@MrZeikinTV",
-  "@登録者増える度に終戦-f2e",
-  "@荒らし系スーパーサイヤヒトラー",
-  "@宇宙の予測する俺-t9s",
-  "@Uesumrubourg大使館広報",
-  "@kncw539",
-  "@俺に反応してる時点で同類",
-  "@チー豚撲滅",
-  "@36日後のあなた",
-  "@さとうげんた-r4d",
-  "@user-ikemen_",
-  "@KANARAZU_ARASU",
-  "@荒らし-g2b",
-  "@mariruitomariburawakami"
-];
+
+// ユーザー定義フィルターを保持する変数
+let allFilters = [...commentFilters];
+
+// ユーザー定義リストをストレージから読み込み、フィルタリング処理を開始する
+function initializeFiltersAndHideComments() {
+    chrome.storage.local.get('userCommentFilters', (data) => {
+        const userFiltersText = data.userCommentFilters || '';
+        const userFilters = [];
+
+        // ユーザー入力を改行で分割し、正規表現オブジェクトに変換
+        // 正規表現メタ文字のエスケープ処理がないため、ユーザーには「通常の文字列として」入力してもらう前提
+        // ユーザーが入力する各行を新しいフィルターとして処理
+        userFiltersText.split('\n').forEach(line => {
+            const trimmedLine = line.trim();
+            if (trimmedLine) {
+                // シンプルな文字列一致フィルターとして /.../i (大文字小文字無視) の正規表現に変換
+                try {
+                    // ユーザーが意図的に正規表現を入力する場合に備えて、Stringを正規表現に変換
+                    // 注意: ユーザー入力が不正な正規表現の場合、エラーを避けるために try-catch が必要
+                    // ここではシンプルに、入力文字列全体にマッチするパターンを生成
+                    const escapedLine = trimmedLine.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    userFilters.push(new RegExp(escapedLine, 'i'));
+                } catch (e) {
+                    console.error("無効なユーザーフィルターパターン:", trimmedLine, e);
+                }
+            }
+        });
+
+        // デフォルトリストとユーザーリストを結合
+        allFilters = [...commentFilters, ...userFilters];
+        console.log("全フィルターがロードされました:", allFilters);
+
+        // フィルターリストが揃った後で、コメント非表示関数を実行・監視開始
+        hideComments();
+        // ページロードやスクロールでのコメント表示時に関数を再実行
+        new MutationObserver(hideComments).observe(document, { childList: true, subtree: true });
+    });
+}
 
 // コメント非表示関数
 function hideComments() {
+  //全てのコメントを取得
   const comments = document.querySelectorAll("ytd-comment-thread-renderer");
   comments.forEach(comment => {
+    //コメントの本文を取得
     const text = comment.querySelector("#content-text").textContent.toLowerCase();
-    const handle = comment.querySelector("#author-text").textContent.trim().toLowerCase();
 
-    // コメント内容またはハンドル名がフィルタに一致するかチェック
-    const shouldHide = commentFilters.some(filter => filter.test(text)) ||
-                       handleFilters.includes(handle);
+    // コメント内容がフィルタに一致するかチェック
+    const shouldHide = allFilters.some(filter => filter.test(text));
 
     if (shouldHide) {
       comment.style.display = "none";
@@ -153,7 +152,12 @@ function hideComments() {
 // ページがリロードされた際にカウントをリセット
 chrome.runtime.sendMessage({ action: "resetCount" });
 
+// フィルターの初期化と処理開始
+initializeFiltersAndHideComments();
+
+// ... 既存の MutationObserver の行は initializeFiltersAndHideComments 内に移動
+
 // ページロードやスクロールでのコメント表示時に関数を再実行
-new MutationObserver(hideComments).observe(document, { childList: true, subtree: true });
+//new MutationObserver(hideComments).observe(document, { childList: true, subtree: true });
 
 //テスト用動画 https://www.youtube.com/watch?v=LE-JN7_rxtE

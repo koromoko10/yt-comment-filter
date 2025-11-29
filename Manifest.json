@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "YouTube コメントフィルター",
-  "version": "1.0.4",
-  "version_name": "Beta 1.0.4 [UIを改善しました！]",
+  "version": "1.1.0",
+  "version_name": "1.1.0 [ユーザーフィルター追加！]",
   "description": "特定のパターンに合うYouTubeコメントを自動で非表示にします",
   "permissions": [
     "scripting",
@@ -13,6 +13,10 @@
   ],
   "background": {
     "service_worker": "background.js"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
   },
   "content_scripts": [
     {
