@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>削除されたコメント数</title>
+  <title>削除したコメント数</title>
   <style>
     /*ダークモード対応系*/
     :root {
@@ -17,8 +17,14 @@
         src: url(fonts/LINESeedJP_OTF_Rg.woff) format("woff");
     }
 
+    @font-face {
+        font-family: "Mario_U";
+        font-weight: 400;
+        src: url(fonts/NewSuperMarioFontU.ttf) format("truetype");
+    }
+
     body { 
-        font-family: "LINE_Rg",Arial, sans-serif;
+        font-family: "LINE_Rg",Arial,sans-serif;
         margin: 20px;
 
         /*ダークモード対応系*/
@@ -32,21 +38,21 @@
     }
 
     #deleteCount {
-        font-size: 24px;
-        font-weight: bold;
+        font-size: 35px;
+        /*font-weight: bold;*/
+        font-family: "Mario_U","LINE_Rg",Arial,sans-serif;
     }
     body {
         max-width: 200px;
         min-width: 145px;
+        text-align: center;
     }
 
   </style>
 </head>
 <body>
-    <center>
-    <h3>削除されたコメント数</h3>
-        <div id="deleteCount">0</div>
-    </center>
+    <h3>削除したコメント数</h3>
+    <div id="deleteCount">0</div>
 
     <script src="popup.js"></script>
 </body>
