@@ -48,11 +48,32 @@
         text-align: center;
     }
 
+    button {
+        font-size: 15px;
+        border-radius: 50px;
+        border-style: solid;
+        border-width: 2px;
+        font-family: "LINE_Rg";
+        border-color: #018901;
+        box-shadow: 0px 10px 20px -6px light-dark(#01890175, #018901);
+        background-color: #018901;
+        color: white;
+        transition: all 0.25s cubic-bezier(0.82, -0.02, 0, 0.74);
+    }
+
+    button:hover {
+        color: #018901;
+        background-color: white;
+        cursor: pointer;
+    }
+
   </style>
 </head>
 <body>
     <h3>削除したコメント数</h3>
     <div id="deleteCount">0</div>
+    <br>
+    <button id="go-to-options">設定</button>
 
     <script src="popup.js"></script>
 </body>
